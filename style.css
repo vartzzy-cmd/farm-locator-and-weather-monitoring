@@ -1,0 +1,561 @@
+
+/* =========================
+   GLOBAL STYLE
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #000000;
+    color: #ffffff;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+header {
+    background: linear-gradient(135deg, #000000, #ff8c00);
+    color: #ffffff;
+    text-align: center;
+    padding: 40px 20px;
+    border-bottom: 3px solid #ff8c00;
+}
+
+header h1 {
+    font-size: 34px;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+    color: #ffffff;
+}
+
+header p {
+    font-size: 15px;
+    color: #ffffff;
+}
+
+/* =========================
+   API SECTION
+========================= */
+
+.api-section {
+    background: #111111;
+    color: #ffffff;
+    padding: 25px;
+    text-align: center;
+    border-bottom: 1px solid #ff8c00;
+}
+
+.api-section label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.api-input {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.api-input input {
+    padding: 13px;
+    width: 320px;
+    max-width: 70%;
+    background: #222222;
+    color: #ffffff;
+    border: 1px solid #ff8c00;
+    border-radius: 6px;
+    outline: none;
+}
+
+.api-input input::placeholder {
+    color: #bbbbbb;
+}
+
+.api-input input:focus {
+    border-color: #ffa500;
+    box-shadow: 0 0 8px #ff8c00;
+}
+
+.api-input button {
+    padding: 12px 20px;
+    background: #ff8c00;
+    color: #000000;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.api-input button:hover {
+    background: #ffa500;
+    transform: scale(1.05);
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+
+main {
+    max-width: 1300px;
+    margin: 35px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 25px;
+}
+
+.map-section,
+.weather-section {
+    background: #111111;
+    color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #ff8c00;
+    box-shadow: 0 4px 20px rgba(255, 140, 0, 0.12);
+}
+
+h2 {
+    color: #ff8c00;
+    margin-bottom: 15px;
+}
+
+.section-description {
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+/* =========================
+   MAP
+========================= */
+
+#map {
+    height: 500px;
+    width: 100%;
+    border-radius: 10px;
+    border: 2px solid #ff8c00;
+    z-index: 1;
+}
+
+/* =========================
+   WEATHER CARD
+========================= */
+
+.weather-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(135deg, #222222, #111111);
+    color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    border-left: 5px solid #ff8c00;
+}
+
+.weather-symbol {
+    font-size: 85px;
+    min-width: 100px;
+    text-align: center;
+    animation: weatherFloat 2.5s ease-in-out infinite;
+}
+
+.weather-card strong {
+    display: block;
+    font-size: 23px;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.weather-description {
+    text-transform: capitalize;
+    color: #ffae42;
+    margin-bottom: 12px;
+}
+
+.weather-card h1 {
+    font-size: 42px;
+    color: #ff8c00;
+    margin: 10px 0;
+}
+
+/* =========================
+   WEATHER DETAILS
+========================= */
+
+.weather-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.weather-info div {
+    background: #ff8c00;
+    color: #000000;
+    padding: 13px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.weather-info span {
+    display: block;
+    color: #000000;
+    margin-bottom: 6px;
+}
+
+.weather-info strong {
+    font-size: 16px;
+    color: #000000;
+    margin: 0;
+}
+
+/* =========================
+   WEATHER ANIMATION
+========================= */
+
+@keyframes weatherFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-9px);
+    }
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.empty-state {
+    text-align: center;
+    padding: 45px 15px;
+    color: #ffffff;
+}
+
+.empty-state span {
+    display: block;
+    font-size: 65px;
+    margin-bottom: 15px;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+#status {
+    margin-top: 20px;
+    padding: 13px;
+    background: #222222;
+    color: #ffffff;
+    border-left: 4px solid #ff8c00;
+    border-radius: 7px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* =========================
+   MAP POPUPS
+========================= */
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+    background: #111111;
+    color: #ffffff;
+}
+
+.leaflet-popup-content {
+    color: #ffffff;
+    line-height: 1.7;
+}
+
+.leaflet-popup-content strong {
+    color: #ff8c00;
+}
+
+.leaflet-tooltip {
+    background: #ff8c00;
+    color: #000000;
+    border: none;
+    font-weight: bold;
+}
+
+/* =========================
+   SELECTED AREA HIGHLIGHT
+========================= */
+
+.selected-area {
+    animation: boundaryPulse 2s ease-in-out infinite;
+}
+
+@keyframes boundaryPulse {
+    0%, 100% {
+        fill-opacity: 0.35;
+        stroke-opacity: 1;
+    }
+
+    50% {
+        fill-opacity: 0.15;
+        stroke-opacity: 0.65;
+    }
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+::-webkit-scrollbar {
+    width: 9px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ff8c00;
+    border-radius: 10px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+    background: #111111;
+    color: #ffffff;
+    text-align: center;
+    padding: 30px 15px;
+    margin-top: 40px;
+    line-height: 2;
+    border-top: 3px solid #ff8c00;
+}
+
+footer h3 {
+    color: #ff8c00;
+    margin-bottom: 10px;
+}
+
+/* =========================
+   RESPONSIVE DESIGN
+========================= */
+
+@media (max-width: 900px) {
+    main {
+        grid-template-columns: 1fr;
+    }
+
+    #map {
+        height: 400px;
+    }
+}
+
+@media (max-width: 500px) {
+    header h1 {
+        font-size: 25px;
+    }
+
+    main {
+        padding: 0 12px;
+    }
+
+    .map-section,
+    .weather-section {
+        padding: 15px;
+    }
+
+    .weather-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .weather-info {
+        grid-template-columns: 1fr;
+    }
+
+    .api-input input {
+        width: 70%;
+    }
+
+    #map {
+        height: 350px;
+    }
+}
+
+/* =========================
+   FIX MAP POPUP TEXT
+========================= */
+
+.leaflet-popup-content-wrapper {
+    background: #111111 !important;
+    color: #ffffff !important;
+    border: 2px solid #ff8c00;
+    border-radius: 10px;
+}
+
+.leaflet-popup-content {
+    color: #ffffff !important;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.leaflet-popup-content strong,
+.leaflet-popup-content b {
+    color: #ff8c00 !important;
+}
+
+.leaflet-popup-content p {
+    color: #ffffff !important;
+}
+
+.leaflet-popup-tip {
+    background: #111111 !important;
+}
+
+.leaflet-popup-close-button {
+    color: #ff8c00 !important;
+}
+
+/* =========================
+   FIX WEATHER TEXT
+========================= */
+
+.weather-section {
+    color: #ffffff !important;
+}
+
+.weather-section p,
+.weather-section div {
+    color: #ffffff;
+}
+
+.weather-card strong {
+    color: #ffffff !important;
+}
+
+.weather-card h1 {
+    color: #ff8c00 !important;
+}
+
+.weather-description {
+    color: #ffae42 !important;
+}
+
+/* =========================
+   FIX STATUS TEXT
+========================= */
+
+#status {
+    background: #222222 !important;
+    color: #ffffff !important;
+}
+
+/* =========================
+   FIX TOOLTIP
+========================= */
+
+.leaflet-tooltip {
+    background: #ff8c00 !important;
+    color: #000000 !important;
+    border: none !important;
+    font-weight: bold;
+}
+
+/* =========================
+   LOCATION SEARCH BAR
+========================= */
+
+.location-search {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+    width: 100%;
+}
+
+.location-search input {
+    flex: 1;
+    min-width: 0;
+    padding: 14px;
+    background: #222222;
+    color: #ffffff;
+    border: 2px solid #ff8c00;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+}
+
+.location-search input::placeholder {
+    color: #bbbbbb;
+}
+
+.location-search input:focus {
+    border-color: #ffa500;
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.4);
+}
+
+.location-search button {
+    padding: 12px 20px;
+    background: #ff8c00;
+    color: #000000;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.location-search button:hover {
+    background: #ffa500;
+    transform: scale(1.04);
+}
+
+/* SEARCH RESULTS */
+
+#searchResults {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.search-result {
+    background: #222222;
+    color: #ffffff;
+    border: 1px solid #ff8c00;
+    border-radius: 7px;
+    padding: 12px;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.search-result:hover {
+    background: #ff8c00;
+    color: #000000;
+}
+
+.search-message {
+    color: #ffffff;
+    padding: 10px;
+    font-size: 13px;
+}
+
+@media (max-width: 500px) {
+    .location-search {
+        flex-direction: column;
+    }
+
+    .location-search button {
+        width: 100%;
+    }
+}
+
