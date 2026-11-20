@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AgriSulbad | Weather Monitoring</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <a href="index.html" class="logo">🌱 AgriSulbad</a>
+
+        <nav class="navigation">
+            <a href="index.html">Home</a>
+            <a href="locator.html">Land Locator</a>
+            <a href="weather.html" class="active">Weather</a>
+            <a href="about.html">About</a>
+        </nav>
+
+        <button id="themeToggle" class="theme-toggle">
+            🌙 Dark Mode
+        </button>
+    </header>
+
+    <main class="section page-section">
+
+        <div class="section-heading">
+            <span class="hero-label">WEATHER INFORMATION</span>
+            <h1>Weather Monitoring</h1>
+            <p>
+                Monitor current weather conditions and forecasts
+                by selecting a location on the map.
+            </p>
+        </div>
+
+        <div class="weather-search">
+            <input
+                type="text"
+                id="cityInput"
+                placeholder="Search barangay, city, or municipality..."
+            >
+
+            <button id="weatherSearchBtn">
+                Search
+            </button>
+
+            <button id="currentWeatherBtn">
+                📍 My Location
+            </button>
+        </div>
+
+        <div class="weather-layout">
+
+            <section class="weather-map-section">
+
+                <div class="panel-heading">
+                    <h2>📍 Location Map</h2>
+                    <p>
+                        Click anywhere on the map or drag the marker
+                        to select your location.
+                    </p>
+                </div>
+
+                <div id="weatherMap"></div>
+
+                <div class="selected-location">
+
+                    <h3>Selected Location</h3>
+
+                    <p id="weatherLocationName">
+                        No location selected.
+                    </p>
+
+                    <p id="weatherCoordinates">
+                        Coordinates will appear here.
+                    </p>
+
+                </div>
+
+            </section>
+
+            <section class="weather-information-section">
+
+                <div class="panel-heading">
+                    <h2>🌤️ Weather Information</h2>
+                    <p>
+                        Current weather conditions and upcoming forecast.
+                    </p>
+                </div>
+
+                <div id="weatherResult">
+
+                    <div class="weather-placeholder">
+                        <span>🌤️</span>
+
+                        <h3>Weather Information</h3>
+
+                        <p>
+                            Select a location on the map to view
+                            its current weather and forecast.
+                        </p>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+    <footer>
+        <h3>🌱 AgriSulbad</h3>
+        <p>
+            Land Farm Locator and Weather Monitoring
+        </p>
+        <p>
+            © 2026 AgriSulbad. All Rights Reserved.
+        </p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="js/main.js"></script>
+    <script src="js/weather.js"></script>
+
+</body>
+</html>

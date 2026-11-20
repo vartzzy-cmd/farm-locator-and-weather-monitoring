@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSulbad | Land Farm Locator</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="header">
+    <a href="index.html" class="logo">🌱 AgriSulbad</a>
+
+    <nav class="navigation">
+        <a href="index.html">Home</a>
+        <a href="locator.html" class="active">Land Locator</a>
+        <a href="weather.html">Weather</a>
+        <a href="about.html">About</a>
+    </nav>
+
+    <button class="theme-toggle" id="themeToggle">🌙 Dark Mode</button>
+</header>
+
+<main class="section page-section">
+    <div class="section-heading">
+        <span class="hero-label">LOCATION AND LAND INFORMATION</span>
+        <h1>Land Farm Locator</h1>
+        <p>Search for a place, select a map location, or mark your farmland boundaries.</p>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchLocation" placeholder="Search barangay, municipality, or location...">
+        <button id="searchBtn">Search</button>
+        <button id="myLocationBtn">My Location</button>
+    </div>
+
+    <div class="notice">
+        <strong>Map instructions</strong>
+        <p>
+            Click anywhere on the map to place a movable location marker.
+            Use the polygon tool to draw your farm boundary.
+        </p>
+    </div>
+
+    <div id="map"></div>
+
+    <section class="land-information">
+        <h2>Land Information</h2>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <span>Land Area</span>
+                <h3 id="landArea">0.00 ha</h3>
+            </div>
+
+            <div class="info-card">
+                <span>Square Meters</span>
+                <h3 id="landMeters">0 m²</h3>
+            </div>
+
+            <div class="info-card">
+                <span>Land Status</span>
+                <h3 id="landStatus">No Land Selected</h3>
+            </div>
+        </div>
+
+        <div class="button-row">
+            <button id="weatherLandBtn">View Farm Weather</button>
+            <button id="clearLandBtn" class="danger-btn">Clear Land</button>
+        </div>
+    </section>
+
+    <section class="selected-location">
+        <h2>Selected Map Location</h2>
+        <p id="selectedLocationName">No location selected.</p>
+        <p id="selectedCoordinates">Coordinates will appear here.</p>
+        <button id="viewSelectedWeather" disabled>View Selected Location Weather</button>
+    </section>
+</main>
+
+<footer>
+    <p>© 2026 AgriSulbad | Land Farm Locator & Weather Monitoring</p>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+<script src="js/main.js"></script>
+<script src="js/locator.js"></script>
+</body>
+</html>

@@ -4,206 +4,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>AgriSulbad | Land Farm Locator</title>
-
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-
-    <!-- Leaflet Draw CSS -->
-    <link rel="stylesheet"
-        href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    <title>AgriSulbad | Home</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
-<header>
-    <div class="logo">🌱 AgriLocate</div>
+<header class="header">
+    <a href="index.html" class="logo">🌱 AgriSulbad</a>
 
-    <nav>
-        <a href="#home">Home</a>
-        <a href="#map-section">Land Locator</a>
-        <a href="#weather-section">Weather</a>
-        <a href="#about">About</a>
+    <nav class="navigation">
+        <a href="index.html" class="active">Home</a>
+        <a href="locator.html">Land Locator</a>
+        <a href="weather.html">Weather</a>
+        <a href="about.html">About</a>
     </nav>
+
+    <button class="theme-toggle" id="themeToggle">🌙 Dark Mode</button>
 </header>
 
-<!-- HERO SECTION -->
-<section class="hero" id="home">
-
-    <p class="tagline">SMART AGRICULTURE</p>
-
-    <h1>Land Farm Locator & Weather Monitoring</h1>
-
-    <p>
-        Explore agricultural locations, select your own land,
-        identify property boundaries, calculate land area,
-        and monitor local weather conditions.
-    </p>
-
-    <a href="#map-section" class="hero-btn">
-        Explore Land Map
-    </a>
-
-</section>
-
 <main>
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-label">SMART AGRICULTURE WEB PROJECT</span>
+            <h1>Discover Smarter Ways to Manage Your Farmland</h1>
+            <p>
+                Locate your farmland, identify land boundaries,
+                calculate land area, and monitor weather conditions
+                with AgriSulbad.
+            </p>
+            <div class="hero-buttons">
+                <a href="locator.html" class="primary-btn">Explore Land Locator</a>
+                <a href="weather.html" class="secondary-btn">Check Weather</a>
+            </div>
+        </div>
+    </section>
 
-    <!-- LAND LOCATOR -->
-    <section class="section" id="map-section">
-
+    <section class="section">
         <div class="section-heading">
-            <p class="tagline">INTERACTIVE MAP</p>
-            <h2>Land Farm Locator</h2>
-            <p>Search a location and draw your own land boundaries.</p>
+            <h2>Explore AgriSulbad</h2>
+            <p>Tools designed to support smarter agricultural planning.</p>
         </div>
 
-        <!-- LOCATION SEARCH BAR -->
-        <div class="map-search">
+        <div class="feature-grid">
+            <a href="locator.html" class="feature-card">
+                <div class="feature-icon">📍</div>
+                <h3>Land Farm Locator</h3>
+                <p>Find locations, mark farmland boundaries, and calculate land area.</p>
+                <span>Explore Locator →</span>
+            </a>
 
-            <input
-                type="text"
-                id="searchLocation"
-                placeholder="Search barangay, municipality, or location..."
-            >
+            <a href="weather.html" class="feature-card">
+                <div class="feature-icon">🌦️</div>
+                <h3>Weather Monitoring</h3>
+                <p>View current weather conditions and upcoming forecast information.</p>
+                <span>View Weather →</span>
+            </a>
 
-            <button id="searchBtn">Search</button>
-
-            <button id="myLocationBtn" class="location-btn">
-                ◎ My Location
-            </button>
-
+            <a href="about.html" class="feature-card">
+                <div class="feature-icon">🌱</div>
+                <h3>About AgriSulbad</h3>
+                <p>Learn about the project, its purpose, and its main features.</p>
+                <span>Learn More →</span>
+            </a>
         </div>
-
-        <!-- MAP INSTRUCTIONS -->
-        <div class="map-instructions">
-            <strong>How to select your land:</strong>
-            Search your location, zoom into your property, and
-            use the polygon drawing tool on the map to outline its boundaries.
-        </div>
-
-        <!-- MAP -->
-        <div id="map"></div>
-
-        <!-- LAND INFORMATION -->
-        <div class="land-info">
-
-            <div class="info-card">
-                <span>LAND AREA</span>
-                <h3 id="landArea">0.00 ha</h3>
-            </div>
-
-            <div class="info-card">
-                <span>SQUARE METERS</span>
-                <h3 id="landMeters">0 m²</h3>
-            </div>
-
-            <div class="info-card">
-                <span>LAND STATUS</span>
-                <h3 id="landStatus">Not selected</h3>
-            </div>
-
-        </div>
-
-        <div class="map-actions">
-
-            <button id="weatherLandBtn">
-                Check Selected Land Weather
-            </button>
-
-            <button id="clearLandBtn" class="clear-btn">
-                Clear Land
-            </button>
-
-        </div>
-
     </section>
 
-
-    <!-- WEATHER MONITORING -->
-    <section class="section weather-section" id="weather-section">
-
-        <div class="section-heading">
-            <p class="tagline">WEATHER INFORMATION</p>
-            <h2>Weather Monitoring</h2>
-            <p>Search a location or check the weather of your selected land.</p>
+    <section class="home-banner">
+        <div>
+            <h2>Start Exploring Your Farm Location</h2>
+            <p>Use the interactive map to select a location and explore its surroundings.</p>
         </div>
-
-        <!-- WEATHER SEARCH BAR -->
-        <div class="weather-search">
-
-            <input
-                type="text"
-                id="cityInput"
-                placeholder="Enter city or municipality..."
-            >
-
-            <button id="weatherSearchBtn">
-                Search Weather
-            </button>
-
-        </div>
-
-        <!-- WEATHER RESULT -->
-        <div class="weather-card" id="weatherResult">
-
-            <div class="weather-icon">🌤️</div>
-
-            <h3>Weather Information</h3>
-
-            <p>Search a location to view its weather.</p>
-
-        </div>
-
+        <a href="locator.html" class="primary-btn">Open Map</a>
     </section>
-
-
-    <!-- ABOUT -->
-    <section class="about" id="about">
-
-        <p class="tagline">ABOUT THE PROJECT</p>
-
-        <h2>Connecting Agriculture and Technology</h2>
-
-        <p>
-            AgriLocate is a web-based project that combines
-            interactive geographical mapping, land boundary
-            selection, land area calculation, and weather
-            monitoring to support agricultural land exploration.
-        </p>
-
-    </section>
-
 </main>
 
-
 <footer>
-
-    <p>© 2026 AgriLocate</p>
-
-    <p>
-        Land Farm Locator and Weather Monitoring Website
-    </p>
-
-    <p>
-        Powered by Leaflet, OpenStreetMap and OpenWeather
-    </p>
-
+    <p>© 2026 AgriSulbad | Land Farm Locator & Weather Monitoring</p>
 </footer>
 
-
-<!-- LEAFLET JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<!-- LEAFLET DRAW JS -->
-<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
-
-<!-- CUSTOM JAVASCRIPT -->
-<script src="script.js"></script>
-
+<script src="js/main.js"></script>
 </body>
 </html>
