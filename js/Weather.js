@@ -1,13 +1,12 @@
-
+// ===== CONFIG =====
+// Paste your NEW OpenWeatherMap key here (regenerate the one you shared earlier).
 const API_KEY = "465cfc1c39c3063f3f40345b771dbafe";
 
 const DEFAULT_LAT = 8.541;
 const DEFAULT_LON = 124.872;
 
-const weatherMap = L.map("weatherMap").setView(
-    [DEFAULT_LAT, DEFAULT_LON],
-    13
-);
+// ===== MAP SETUP =====
+const weatherMap = L.map("weatherMap").setView([DEFAULT_LAT, DEFAULT_LON], 13);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -16,7 +15,9 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 let weatherMarker = null;
 let currentRequest = 0;
+let lastNominatimCall = 0;
 
+// ===== ELEMENTS =====
 const locationName = document.getElementById("weatherLocationName");
 const coordinates = document.getElementById("weatherCoordinates");
 const weatherResult = document.getElementById("weatherResult");
@@ -24,6 +25,28 @@ const weatherResult = document.getElementById("weatherResult");
 const cityInput = document.getElementById("cityInput");
 const weatherSearchBtn = document.getElementById("weatherSearchBtn");
 const currentWeatherBtn = document.getElementById("currentWeatherBtn");
+
+// ===== HELPERS =====
+function showNotice(icon, title, message) {
+    weatherResult.innerHTML = `
+        <div class="weather-placeholder">
+            <span>${icon}</span>
+            <h3>${title}</h3>
+            <p>${message}</p>
+        </div>
+    `;
+}
+
+// Nominatim allows about 1 request per second, so space calls out.
+async function throttleNominatim() {
+    const minGap = 1100;
+    const wait = Math.max(0, minGap - (Date.now() - lastNominatimCall));
+    lastNominatimCall = Date.now() + wait;
+
+    if (wait > 0) {
+        await new Promise(resolve => setTimeout(resolve, wait));
+    }
+}
 
 function setMarkerLabel(name) {
     if (!weatherMarker) return;
@@ -40,10 +63,30 @@ function setMarkerLabel(name) {
     weatherMarker.openTooltip();
 }
 
+function getWeatherIcon(condition) {
+    const icons = {
+        Clear: "☀️",
+        Clouds: "☁️",
+        Rain: "🌧️",
+        Drizzle: "🌦️",
+        Thunderstorm: "⛈️",
+        Snow: "❄️",
+        Mist: "🌫️",
+        Fog: "🌫️",
+        Haze: "🌫️"
+    };
+
+    return icons[condition] || "🌤️";
+}
+
+// ===== LOCATION =====
 async function getLocationName(lat, lon) {
     try {
+        await throttleNominatim();
+
         const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`,
+            { headers: { "Accept-Language": "en" } }
         );
 
         if (!response.ok) {
@@ -66,19 +109,11 @@ async function getLocationName(lat, lon) {
             address.city ||
             address.county;
 
-        const province =
-            address.province ||
-            address.state;
+        const province = address.province || address.state;
 
-        const parts = [
-            barangay,
-            municipality,
-            province
-        ].filter(Boolean);
+        const parts = [barangay, municipality, province].filter(Boolean);
 
-        return parts.length
-            ? parts.join(", ")
-            : data.name || "Selected Location";
+        return parts.length ? parts.join(", ") : data.name || "Selected Location";
 
     } catch (error) {
         console.error("Location error:", error);
@@ -90,17 +125,11 @@ async function setWeatherMarker(lat, lon) {
     const position = [lat, lon];
 
     if (!weatherMarker) {
-        weatherMarker = L.marker(position, {
-            draggable: true
-        }).addTo(weatherMap);
+        weatherMarker = L.marker(position, { draggable: true }).addTo(weatherMap);
 
         weatherMarker.on("dragend", function () {
             const newPosition = weatherMarker.getLatLng();
-
-            updateWeatherLocation(
-                newPosition.lat,
-                newPosition.lng
-            );
+            updateWeatherLocation(newPosition.lat, newPosition.lng);
         });
     } else {
         weatherMarker.setLatLng(position);
@@ -114,45 +143,37 @@ async function setWeatherMarker(lat, lon) {
 async function updateWeatherLocation(lat, lon) {
     const requestId = ++currentRequest;
 
-    coordinates.textContent =
-        `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
-
+    coordinates.textContent = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
     locationName.textContent = "Finding location...";
-
     setMarkerLabel("Finding location...");
+
+    // Load weather right away; it only needs coordinates.
+    loadWeather(lat, lon, requestId);
 
     const placeName = await getLocationName(lat, lon);
 
     if (requestId !== currentRequest) return;
 
     locationName.textContent = placeName;
-
     setMarkerLabel(placeName);
-
-    loadWeather(lat, lon);
 }
 
-async function loadWeather(lat, lon) {
-    const requestId = currentRequest;
-
-    if (API_KEY === "465cfc1c39c3063f3f40345b771dbafe") {
-        weatherResult.innerHTML = `
-            <div class="weather-placeholder">
-                <span>🔑</span>
-                <h3>API Key Required</h3>
-                <p>Please add your OpenWeatherMap API key inside weather.js.</p>
-            </div>
-        `;
+// ===== WEATHER =====
+async function loadWeather(lat, lon, requestId) {
+    if (!API_KEY || API_KEY === "YOUR_API_KEY_HERE") {
+        showNotice(
+            "🔑",
+            "API Key Required",
+            "Please add your OpenWeatherMap API key inside weather.js."
+        );
         return;
     }
 
-    weatherResult.innerHTML = `
-        <div class="weather-placeholder">
-            <span>🌤️</span>
-            <h3>Loading Weather...</h3>
-            <p>Getting weather information for your selected location.</p>
-        </div>
-    `;
+    showNotice(
+        "🌤️",
+        "Loading Weather...",
+        "Getting weather information for your selected location."
+    );
 
     try {
         const currentURL =
@@ -165,6 +186,10 @@ async function loadWeather(lat, lon) {
             fetch(currentURL),
             fetch(forecastURL)
         ]);
+
+        if (currentResponse.status === 401 || forecastResponse.status === 401) {
+            throw new Error("INVALID_KEY");
+        }
 
         if (!currentResponse.ok || !forecastResponse.ok) {
             throw new Error("Weather data unavailable");
@@ -182,13 +207,19 @@ async function loadWeather(lat, lon) {
 
         if (requestId !== currentRequest) return;
 
-        weatherResult.innerHTML = `
-            <div class="weather-placeholder">
-                <span>⚠️</span>
-                <h3>Weather Unavailable</h3>
-                <p>Please check your API key or internet connection and try again.</p>
-            </div>
-        `;
+        if (error.message === "INVALID_KEY") {
+            showNotice(
+                "🔑",
+                "Invalid API Key",
+                "The key was rejected. Check it for typos. New keys can take up to a couple of hours to activate."
+            );
+        } else {
+            showNotice(
+                "⚠️",
+                "Weather Unavailable",
+                "Please check your internet connection and try again."
+            );
+        }
     }
 }
 
@@ -201,6 +232,7 @@ function displayWeather(current, forecast) {
 
     const icon = getWeatherIcon(current.weather[0].main);
 
+    // 8 items x 3-hour steps = next 24 hours
     const forecastItems = forecast.list.slice(0, 8);
 
     const rainForecast = forecastItems.find(item =>
@@ -210,19 +242,39 @@ function displayWeather(current, forecast) {
 
     const rainChance = rainForecast
         ? Math.round(rainForecast.pop * 100)
-        : Math.round(
-            Math.max(...forecastItems.map(item => item.pop)) * 100
-        );
+        : Math.round(Math.max(...forecastItems.map(item => item.pop)) * 100);
 
     let rainMessage;
 
     if (rainChance >= 70) {
-        rainMessage = "High chance of rain in the upcoming forecast periods. Prepare for possible rainfall.";
+        rainMessage = "High chance of rain in the next 24 hours. Prepare for possible rainfall.";
     } else if (rainChance >= 40) {
-        rainMessage = "There may be a chance of rain. Monitor the weather before doing outdoor farm activities.";
+        rainMessage = "There may be a chance of rain in the next 24 hours. Monitor the weather before doing outdoor farm activities.";
     } else {
-        rainMessage = "Low forecast probability of rain in the upcoming periods. Continue monitoring local conditions.";
+        rainMessage = "Low forecast probability of rain in the next 24 hours. Continue monitoring local conditions.";
     }
+
+    const forecastHTML = forecastItems.map(item => {
+        const date = new Date(item.dt * 1000);
+
+        const time = date.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit"
+        });
+
+        const day = date.toLocaleDateString("en-US", { weekday: "short" });
+
+        const forecastIcon = getWeatherIcon(item.weather[0].main);
+
+        return `
+            <div class="forecast-item">
+                <span>${day} ${time}</span>
+                <strong>${forecastIcon}</strong>
+                <b>${Math.round(item.main.temp)}°C</b>
+                <small>${Math.round(item.pop * 100)}% rain</small>
+            </div>
+        `;
+    }).join("");
 
     weatherResult.innerHTML = `
         <div class="weather-card">
@@ -231,9 +283,7 @@ function displayWeather(current, forecast) {
 
             <div class="temperature">${temperature}°C</div>
 
-            <p class="weather-description">
-                ${condition}
-            </p>
+            <p class="weather-description">${condition}</p>
 
             <div class="weather-details">
 
@@ -274,37 +324,11 @@ function displayWeather(current, forecast) {
                 <h3>Upcoming Forecast</h3>
 
                 <p class="forecast-subtitle">
-                    Weather forecast for the next available periods
+                    Weather forecast for the next 24 hours (3-hour steps)
                 </p>
 
                 <div class="forecast-grid">
-
-                    ${forecastItems.map(item => {
-        const date = new Date(item.dt * 1000);
-
-        const time = date.toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "2-digit"
-        });
-
-        const day = date.toLocaleDateString("en-US", {
-            weekday: "short"
-        });
-
-        const forecastIcon = getWeatherIcon(
-            item.weather[0].main
-        );
-
-        return `
-                            <div class="forecast-item">
-                                <span>${day} ${time}</span>
-                                <strong>${forecastIcon}</strong>
-                                <b>${Math.round(item.main.temp)}°C</b>
-                                <small>${Math.round(item.pop * 100)}% rain</small>
-                            </div>
-                        `;
-    }).join("")}
-
+                    ${forecastHTML}
                 </div>
 
             </div>
@@ -313,27 +337,12 @@ function displayWeather(current, forecast) {
     `;
 }
 
-function getWeatherIcon(condition) {
-    const icons = {
-        Clear: "☀️",
-        Clouds: "☁️",
-        Rain: "🌧️",
-        Drizzle: "🌦️",
-        Thunderstorm: "⛈️",
-        Snow: "❄️",
-        Mist: "🌫️",
-        Fog: "🌫️",
-        Haze: "🌫️"
-    };
-
-    return icons[condition] || "🌤️";
-}
-
+// ===== SEARCH & GEOLOCATION =====
 async function searchLocation() {
     const query = cityInput.value.trim();
 
     if (!query) {
-        alert("Please enter a location.");
+        showNotice("🔍", "Enter a Location", "Please type a place name to search.");
         return;
     }
 
@@ -341,27 +350,31 @@ async function searchLocation() {
     weatherSearchBtn.textContent = "Searching...";
 
     try {
+        await throttleNominatim();
+
         const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`
+            `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`,
+            { headers: { "Accept-Language": "en" } }
         );
+
+        if (!response.ok) {
+            throw new Error("Search request failed");
+        }
 
         const results = await response.json();
 
         if (!results.length) {
-            alert("Location not found. Please try another search.");
+            showNotice("📍", "Location Not Found", "Please try another search.");
             return;
         }
 
         const place = results[0];
 
-        await setWeatherMarker(
-            Number(place.lat),
-            Number(place.lon)
-        );
+        await setWeatherMarker(Number(place.lat), Number(place.lon));
 
     } catch (error) {
         console.error("Search error:", error);
-        alert("Unable to search location. Please try again.");
+        showNotice("⚠️", "Search Failed", "Unable to search location. Please try again.");
     } finally {
         weatherSearchBtn.disabled = false;
         weatherSearchBtn.textContent = "Search";
@@ -370,7 +383,7 @@ async function searchLocation() {
 
 function getCurrentLocation() {
     if (!navigator.geolocation) {
-        alert("Your browser does not support location services.");
+        showNotice("📍", "Not Supported", "Your browser does not support location services.");
         return;
     }
 
@@ -388,7 +401,11 @@ function getCurrentLocation() {
             currentWeatherBtn.textContent = "My Location";
         },
         function () {
-            alert("Unable to get your current location. Please allow location access.");
+            showNotice(
+                "📍",
+                "Location Unavailable",
+                "Unable to get your current location. Please allow location access."
+            );
 
             currentWeatherBtn.disabled = false;
             currentWeatherBtn.textContent = "My Location";
@@ -400,11 +417,9 @@ function getCurrentLocation() {
     );
 }
 
+// ===== EVENTS =====
 weatherMap.on("click", function (event) {
-    setWeatherMarker(
-        event.latlng.lat,
-        event.latlng.lng
-    );
+    setWeatherMarker(event.latlng.lat, event.latlng.lng);
 });
 
 weatherSearchBtn.addEventListener("click", searchLocation);
@@ -417,6 +432,7 @@ cityInput.addEventListener("keydown", function (event) {
 
 currentWeatherBtn.addEventListener("click", getCurrentLocation);
 
+// ===== INIT =====
 const urlParams = new URLSearchParams(window.location.search);
 
 const farmLat = parseFloat(urlParams.get("lat"));
