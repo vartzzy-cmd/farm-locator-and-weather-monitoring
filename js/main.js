@@ -16,7 +16,7 @@ function applyTheme(theme) {
 applyTheme(localStorage.getItem("agrisulbad-theme") || "light");
 
 if (themeToggle) {
-    themeToggle.addEventListener("click", function() {
+    themeToggle.addEventListener("click", function () {
         const newTheme = document.body.classList.contains("dark-mode")
             ? "light"
             : "dark";

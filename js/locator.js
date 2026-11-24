@@ -41,27 +41,27 @@ let landCenter = null;
 let drawingActive = false;
 let locationRequest = 0;
 
-map.on("draw:drawstart", function() {
+map.on("draw:drawstart", function () {
     drawingActive = true;
 });
 
-map.on("draw:drawstop", function() {
+map.on("draw:drawstop", function () {
     drawingActive = false;
 });
 
-map.on("draw:editstart", function() {
+map.on("draw:editstart", function () {
     drawingActive = true;
 });
 
-map.on("draw:editstop", function() {
+map.on("draw:editstop", function () {
     drawingActive = false;
 });
 
-map.on("draw:deletestart", function() {
+map.on("draw:deletestart", function () {
     drawingActive = true;
 });
 
-map.on("draw:deletestop", function() {
+map.on("draw:deletestop", function () {
     drawingActive = false;
 });
 
@@ -117,7 +117,7 @@ function resetLandInformation() {
     landCenter = null;
 }
 
-map.on(L.Draw.Event.CREATED, function(event) {
+map.on(L.Draw.Event.CREATED, function (event) {
     drawnItems.clearLayers();
 
     selectedLand = null;
@@ -129,19 +129,19 @@ map.on(L.Draw.Event.CREATED, function(event) {
     updateLandInformation(layer);
 });
 
-map.on(L.Draw.Event.EDITED, function(event) {
-    event.layers.eachLayer(function(layer) {
+map.on(L.Draw.Event.EDITED, function (event) {
+    event.layers.eachLayer(function (layer) {
         updateLandInformation(layer);
     });
 });
 
-map.on(L.Draw.Event.DELETED, function() {
+map.on(L.Draw.Event.DELETED, function () {
     resetLandInformation();
 });
 
 /* LOCATION MARKER */
 
-map.on("click", function(event) {
+map.on("click", function (event) {
     if (drawingActive) {
         return;
     }
@@ -165,7 +165,7 @@ function setWeatherMarker(lat, lon) {
 
     weatherMarker.off("dragend");
 
-    weatherMarker.on("dragend", function() {
+    weatherMarker.on("dragend", function () {
         const position = weatherMarker.getLatLng();
 
         updateSelectedLocation(position.lat, position.lng);
@@ -227,7 +227,7 @@ async function updateSelectedLocation(lat, lon) {
 
 document.getElementById("searchBtn").addEventListener("click", searchLocation);
 
-document.getElementById("searchLocation").addEventListener("keydown", function(event) {
+document.getElementById("searchLocation").addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
         searchLocation();
     }
@@ -266,21 +266,21 @@ async function searchLocation() {
 
 /* CURRENT LOCATION */
 
-document.getElementById("myLocationBtn").addEventListener("click", function() {
+document.getElementById("myLocationBtn").addEventListener("click", function () {
     if (!navigator.geolocation) {
         alert("Your browser does not support location services.");
         return;
     }
 
     navigator.geolocation.getCurrentPosition(
-        function(position) {
+        function (position) {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
 
             map.setView([lat, lon], 17);
             setWeatherMarker(lat, lon);
         },
-        function() {
+        function () {
             alert("Unable to access your location. Please allow location permission.");
         }
     );
@@ -293,7 +293,7 @@ function openWeatherPage(lat, lon) {
         `weather.html?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
 }
 
-document.getElementById("viewSelectedWeather").addEventListener("click", function() {
+document.getElementById("viewSelectedWeather").addEventListener("click", function () {
     if (!weatherMarker) {
         return;
     }
@@ -303,7 +303,7 @@ document.getElementById("viewSelectedWeather").addEventListener("click", functio
     openWeatherPage(position.lat, position.lng);
 });
 
-document.getElementById("weatherLandBtn").addEventListener("click", function() {
+document.getElementById("weatherLandBtn").addEventListener("click", function () {
     if (!selectedLand || !landCenter) {
         alert("Please draw your farm boundary first.");
         return;
@@ -314,7 +314,7 @@ document.getElementById("weatherLandBtn").addEventListener("click", function() {
 
 /* CLEAR FARM */
 
-document.getElementById("clearLandBtn").addEventListener("click", function() {
+document.getElementById("clearLandBtn").addEventListener("click", function () {
     drawnItems.clearLayers();
     resetLandInformation();
 });
