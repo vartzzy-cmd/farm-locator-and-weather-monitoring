@@ -135,7 +135,7 @@ async function updateWeatherLocation(lat, lon) {
 async function loadWeather(lat, lon) {
     const requestId = currentRequest;
 
-    if (API_KEY === "YOUR_OPENWEATHER_API_KEY") {
+    if (API_KEY === "465cfc1c39c3063f3f40345b771dbafe") {
         weatherResult.innerHTML = `
             <div class="weather-placeholder">
                 <span>🔑</span>
@@ -280,22 +280,22 @@ function displayWeather(current, forecast) {
                 <div class="forecast-grid">
 
                     ${forecastItems.map(item => {
-                        const date = new Date(item.dt * 1000);
+        const date = new Date(item.dt * 1000);
 
-                        const time = date.toLocaleTimeString("en-US", {
-                            hour: "numeric",
-                            minute: "2-digit"
-                        });
+        const time = date.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit"
+        });
 
-                        const day = date.toLocaleDateString("en-US", {
-                            weekday: "short"
-                        });
+        const day = date.toLocaleDateString("en-US", {
+            weekday: "short"
+        });
 
-                        const forecastIcon = getWeatherIcon(
-                            item.weather[0].main
-                        );
+        const forecastIcon = getWeatherIcon(
+            item.weather[0].main
+        );
 
-                        return `
+        return `
                             <div class="forecast-item">
                                 <span>${day} ${time}</span>
                                 <strong>${forecastIcon}</strong>
@@ -303,7 +303,7 @@ function displayWeather(current, forecast) {
                                 <small>${Math.round(item.pop * 100)}% rain</small>
                             </div>
                         `;
-                    }).join("")}
+    }).join("")}
 
                 </div>
 
