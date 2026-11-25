@@ -9,14 +9,65 @@
     --muted: #68776c;
     --card: #ffffff;
     --border: #e1e9e2;
+    --accent-text: #1c7c45;
 
-    /* Tinted panels (light) */
+    --soft-green: #e8f3eb;
+    --soft-green-text: #145c34;
+    --banner-bg: #eaf5ed;
+    --banner-text: #245b35;
+    --notice-text: #315b3e;
+    --shadow: rgba(0, 0, 0, 0.05);
+
     --tint-green: #f0fdf4;
     --tint-green-border: #bbf7d0;
     --tint-blue: #eff6ff;
     --tint-blue-text: #1e3a8a;
     --tint-orange: #fff7ed;
     --tint-orange-text: #7c2d12;
+
+    --heat-cool: #2563eb;
+    --heat-normal: #16a34a;
+    --heat-hot: #d97706;
+    --heat-very-hot: #dc2626;
+    --heat-extreme: #7f1d1d;
+
+    color-scheme: light;
+}
+
+/* DARK THEME (class is set on <html> early and on <body> by main.js) */
+html.dark-mode,
+body.dark-mode {
+    --green: #34b36b;
+    --dark-green: #2a9a5b;
+    --background: #0f1712;
+    --section: #16211a;
+    --text: #e6efe8;
+    --muted: #9aab9f;
+    --card: #1a261e;
+    --border: #2b3a30;
+    --accent-text: #4ade80;
+
+    --soft-green: #223329;
+    --soft-green-text: #b7ebc9;
+    --banner-bg: #1b2b21;
+    --banner-text: #c8f2d4;
+    --notice-text: #b7d9c3;
+    --shadow: rgba(0, 0, 0, 0.4);
+
+    --tint-green: #14281b;
+    --tint-green-border: #25533a;
+    --tint-blue: #14213d;
+    --tint-blue-text: #bfdbfe;
+    --tint-orange: #2b1c10;
+    --tint-orange-text: #fdba74;
+
+    --heat-cool: #60a5fa;
+    --heat-normal: #4ade80;
+    --heat-hot: #fbbf24;
+    --heat-very-hot: #f87171;
+    --heat-extreme: #fca5a5;
+
+    color-scheme: dark;
 }
 
 * {
@@ -27,6 +78,7 @@
 
 html {
     scroll-behavior: smooth;
+    background: var(--background);
 }
 
 body {
@@ -60,14 +112,14 @@ button {
     justify-content: space-between;
     align-items: center;
     gap: 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 12px var(--shadow);
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
 .logo {
-    color: var(--green);
+    color: var(--accent-text);
     font-size: 22px;
     font-weight: 800;
     white-space: nowrap;
@@ -88,7 +140,7 @@ button {
 
 .navigation a:hover,
 .navigation a.active {
-    color: var(--green);
+    color: var(--accent-text);
 }
 
 /* BUTTONS */
@@ -118,8 +170,8 @@ button:hover,
 }
 
 .secondary-btn {
-    background: #e8f3eb;
-    color: var(--dark-green);
+    background: var(--soft-green);
+    color: var(--soft-green-text);
 }
 
 .danger-btn {
@@ -128,9 +180,16 @@ button:hover,
 }
 
 .theme-toggle {
-    background: #e8f3eb;
-    color: var(--dark-green);
+    background: var(--soft-green);
+    color: var(--soft-green-text);
     white-space: nowrap;
+}
+
+/* Must come after button:hover so it wins */
+.secondary-btn:hover,
+.theme-toggle:hover {
+    background: var(--border);
+    color: var(--soft-green-text);
 }
 
 /* HERO */
@@ -157,7 +216,7 @@ button:hover,
     font-size: 11px;
     letter-spacing: 2px;
     font-weight: 700;
-    color: var(--green);
+    color: var(--accent-text);
     margin-bottom: 12px;
 }
 
@@ -252,7 +311,7 @@ button:hover,
 }
 
 .feature-card span {
-    color: var(--green);
+    color: var(--accent-text);
     font-size: 12px;
     font-weight: 700;
 }
@@ -262,8 +321,8 @@ button:hover,
 .home-banner {
     margin: 0 7% 65px;
     padding: 30px;
-    background: #eaf5ed;
-    color: #245b35;
+    background: var(--banner-bg);
+    color: var(--banner-text);
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -275,6 +334,17 @@ button:hover,
     font-size: 12px;
     margin-top: 8px;
     line-height: 1.7;
+}
+
+/* FOOTER */
+
+footer {
+    padding: 22px 7%;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--section);
+    border-top: 1px solid var(--border);
 }
 
 /* SEARCH */
@@ -313,12 +383,12 @@ button:hover,
 
 .notice {
     padding: 14px;
-    background: #eaf5ed;
+    background: var(--banner-bg);
     border-left: 4px solid var(--green);
     border-radius: 6px;
     margin-bottom: 15px;
     font-size: 12px;
-    color: #315b3e;
+    color: var(--notice-text);
     line-height: 1.7;
 }
 
@@ -362,7 +432,7 @@ button:hover,
 
 .info-card h3 {
     margin-top: 8px;
-    color: var(--green);
+    color: var(--accent-text);
     font-size: 21px;
 }
 
@@ -391,6 +461,28 @@ button:hover,
     overflow-wrap: anywhere;
 }
 
+/* LEAFLET DARK MODE */
+
+html.dark-mode .leaflet-tile-pane,
+body.dark-mode .leaflet-tile-pane {
+    filter: brightness(0.75) contrast(1.1) saturate(0.8);
+}
+
+html.dark-mode .leaflet-popup-content-wrapper,
+html.dark-mode .leaflet-popup-tip,
+body.dark-mode .leaflet-popup-content-wrapper,
+body.dark-mode .leaflet-popup-tip {
+    background: var(--card);
+    color: var(--text);
+}
+
+html.dark-mode .leaflet-bar a,
+body.dark-mode .leaflet-bar a {
+    background: var(--card);
+    color: var(--text);
+    border-color: var(--border);
+}
+
 /* WEATHER SEARCH */
 
 .weather-search {
@@ -415,7 +507,7 @@ button:hover,
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 15px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 16px var(--shadow);
 }
 
 .panel-heading {
@@ -541,7 +633,7 @@ button:hover,
 .temperature {
     font-size: 34px;
     font-weight: 800;
-    color: var(--green);
+    color: var(--accent-text);
     line-height: 1.2;
 }
 
@@ -552,26 +644,18 @@ button:hover,
     margin: 4px 0 10px;
 }
 
-/* ===== TEMPERATURE + HEAT COLORS ===== */
+/* ===== TEMPERATURE + HEAT COLORS (theme-aware) ===== */
 
-.temperature.temp-cool,     .forecast-item b.temp-cool     { color: #2563eb; }
-.temperature.temp-normal,   .forecast-item b.temp-normal   { color: #16a34a; }
-.temperature.temp-hot,      .forecast-item b.temp-hot      { color: #d97706; }
-.temperature.temp-very-hot, .forecast-item b.temp-very-hot { color: #dc2626; }
-.temperature.temp-extreme,  .forecast-item b.temp-extreme  { color: #7f1d1d; }
-
-.heat-cool     { color: #2563eb; }
-.heat-normal   { color: #16a34a; }
-.heat-hot      { color: #d97706; }
-.heat-very-hot { color: #dc2626; }
-.heat-extreme  { color: #7f1d1d; }
-
-/* Needed so these beat ".forecast-item small" (muted color) */
-.forecast-item small.heat-cool     { color: #2563eb; }
-.forecast-item small.heat-normal   { color: #16a34a; }
-.forecast-item small.heat-hot      { color: #d97706; }
-.forecast-item small.heat-very-hot { color: #dc2626; }
-.forecast-item small.heat-extreme  { color: #7f1d1d; }
+.temperature.temp-cool,     .forecast-item b.temp-cool,
+.heat-cool,                 .forecast-item small.heat-cool     { color: var(--heat-cool); }
+.temperature.temp-normal,   .forecast-item b.temp-normal,
+.heat-normal,               .forecast-item small.heat-normal   { color: var(--heat-normal); }
+.temperature.temp-hot,      .forecast-item b.temp-hot,
+.heat-hot,                  .forecast-item small.heat-hot      { color: var(--heat-hot); }
+.temperature.temp-very-hot, .forecast-item b.temp-very-hot,
+.heat-very-hot,             .forecast-item small.heat-very-hot { color: var(--heat-very-hot); }
+.temperature.temp-extreme,  .forecast-item b.temp-extreme,
+.heat-extreme,              .forecast-item small.heat-extreme  { color: var(--heat-extreme); }
 
 /* HEAT BADGE (pill) */
 
@@ -586,11 +670,11 @@ button:hover,
     margin: 6px 0;
 }
 
-.heat-badge.heat-cool     { background: #dbeafe; color: #1d4ed8; }
-.heat-badge.heat-normal   { background: #dcfce7; color: #15803d; }
-.heat-badge.heat-hot      { background: #fef3c7; color: #b45309; }
-.heat-badge.heat-very-hot { background: #fee2e2; color: #b91c1c; }
-.heat-badge.heat-extreme  { background: #fecaca; color: #7f1d1d; }
+.heat-badge.heat-cool     { color: var(--heat-cool);     background: color-mix(in srgb, var(--heat-cool) 18%, transparent); }
+.heat-badge.heat-normal   { color: var(--heat-normal);   background: color-mix(in srgb, var(--heat-normal) 18%, transparent); }
+.heat-badge.heat-hot      { color: var(--heat-hot);      background: color-mix(in srgb, var(--heat-hot) 18%, transparent); }
+.heat-badge.heat-very-hot { color: var(--heat-very-hot); background: color-mix(in srgb, var(--heat-very-hot) 18%, transparent); }
+.heat-badge.heat-extreme  { color: var(--heat-extreme);  background: color-mix(in srgb, var(--heat-extreme) 25%, transparent); }
 
 .heat-badge .icon { color: inherit; }
 
@@ -630,4 +714,161 @@ button:hover,
     font-size: 12px;
 }
 
-/* WEATHER
+
+/* DETAIL CARDS */
+
+.weather-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 14px 0;
+}
+
+.weather-detail {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+}
+
+.weather-detail > span {
+    display: block;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.weather-detail h4 {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 3px;
+}
+
+.weather-detail p {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.weather-detail p small {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+/* RAIN + HEAT ADVISORY PANELS */
+
+.rain-prediction {
+    margin: 12px 0;
+    padding: 12px;
+    border-radius: 10px;
+    text-align: left;
+    background: var(--tint-blue);
+    border: 1px solid var(--border);
+    color: var(--tint-blue-text);
+}
+
+.rain-prediction + .rain-prediction {
+    background: var(--tint-orange);
+    color: var(--tint-orange-text);
+}
+
+.rain-prediction h3 {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.rain-prediction p {
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+/* FORECAST LIST */
+
+.forecast-container {
+    margin-top: 14px;
+    text-align: left;
+}
+
+.forecast-container h3 {
+    font-size: 14px;
+}
+
+.forecast-subtitle {
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+    margin: 4px 0 10px;
+}
+
+.forecast-grid {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+}
+
+.forecast-item {
+    flex: 0 0 86px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 9px 6px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.forecast-item span {
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.forecast-item small {
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.forecast-item b {
+    font-size: 13px;
+}
+
+/* MAP MARKER LABEL */
+
+.location-marker-label {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.leaflet-tooltip-top.location-marker-label::before {
+    border-top-color: var(--card);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+    .weather-layout,
+    .feature-grid,
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header {
+        flex-wrap: wrap;
+    }
+
+    .home-banner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

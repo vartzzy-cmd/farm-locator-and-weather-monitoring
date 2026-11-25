@@ -1,14 +1,23 @@
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgriSulbad | Home</title>
+    <script>
+        /* Apply saved theme before first paint (no white flash) */
+        try {
+            if (localStorage.getItem("agrisulbad-theme") === "dark") {
+                document.documentElement.classList.add("dark-mode");
+            }
+        } catch (e) {}
+    </script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header class="header">
-    <a href="index.html" class="logo">🌱 AgriSulbad</a>s
+    <a href="index.html" class="logo">🌱 AgriSulbad</a>
     <nav class="navigation">
         <a href="index.html" class="active">Home</a>
         <a href="locator.html">Land Locator</a>
@@ -76,10 +85,9 @@
 </main>
 
 <footer>
-    <p>© 2026 AgriSulbad | Land Farm Locator & Weather Monitoring</p>
+    <p>© 2026 AgriSulbad | Land Farm Locator &amp; Weather Monitoring</p>
 </footer>
 
 <script src="js/main.js"></script>
->>>>>>> f24e4e4201cd9e6edecfc8737712eb823dfb99fa
 </body>
 </html>
