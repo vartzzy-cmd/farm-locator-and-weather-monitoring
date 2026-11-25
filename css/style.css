@@ -476,9 +476,24 @@ body.dark-mode .leaflet-popup-tip {
     color: var(--text);
 }
 
-html.dark-mode .leaflet-bar a,
-body.dark-mode .leaflet-bar a {
-    background: var(--card);
+/* Draw toolbar (polygon / edit / delete): the icons are dark images, so the
+   buttons keep a light background and are inverted to look dark with light icons.
+   Only background-COLOR is set here; the shorthand "background" would erase the icons. */
+html.dark-mode .leaflet-draw-toolbar a,
+body.dark-mode .leaflet-draw-toolbar a {
+    background-color: #f4f4f4;
+    filter: invert(0.9);
+}
+
+html.dark-mode .leaflet-draw-actions a,
+body.dark-mode .leaflet-draw-actions a {
+    background-color: var(--card);
+    color: var(--text);
+}
+
+html.dark-mode .leaflet-control-zoom a,
+body.dark-mode .leaflet-control-zoom a {
+    background-color: var(--card);
     color: var(--text);
     border-color: var(--border);
 }
@@ -871,4 +886,157 @@ body.dark-mode .leaflet-bar a {
         flex-direction: column;
         align-items: flex-start;
     }
+}
+
+/* SEARCH RESULTS DROPDOWN (created by locator.js) */
+
+.search-results {
+    list-style: none;
+    margin: -10px 0 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card);
+    box-shadow: 0 6px 18px var(--shadow);
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.search-results[hidden],
+#locatorNotice[hidden] {
+    display: none;
+}
+
+.search-results li {
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+}
+
+.search-results li:last-child {
+    border-bottom: none;
+}
+
+.search-results li:hover,
+.search-results li:focus {
+    background: var(--section);
+    outline: none;
+}
+
+.search-results strong {
+    display: block;
+    font-size: 13px;
+    color: var(--text);
+}
+
+.search-results small {
+    display: block;
+    margin-top: 2px;
+    font-size: 11px;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+}
+
+/* FARM MARKERS */
+
+.farm-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+    line-height: 1;
+    background: var(--card);
+    border: 2px solid var(--green);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.farm-marker.saved {
+    background: var(--green);
+    border-color: var(--card);
+}
+
+.leaflet-popup-content .farm-popup {
+    min-width: 170px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.leaflet-popup-content .farm-popup strong {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 2px;
+}
+
+.leaflet-popup-content .farm-popup p {
+    margin: 0 0 10px;
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.farm-popup-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.farm-popup-actions a.primary-btn {
+    color: #fff;
+}
+
+.farm-popup-actions .primary-btn,
+.farm-popup-actions .secondary-btn,
+.farm-popup-actions .danger-btn {
+    padding: 7px 12px;
+    font-size: 11px;
+}
+
+/* MY FARMS LIST */
+
+.saved-farms {
+    margin-top: 25px;
+}
+
+.saved-farms h2 {
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.saved-farms .empty {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.saved-farms ul {
+    list-style: none;
+    display: grid;
+    gap: 10px;
+}
+
+.saved-farms li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.saved-farms li strong {
+    display: block;
+    font-size: 13px;
+}
+
+.saved-farms li small {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.saved-farms .farm-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
 }
