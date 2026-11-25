@@ -5,6 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgriSulbad | About</title>
+    <script>
+        /* Apply saved theme before first paint (no white flash) */
+        try {
+            if (localStorage.getItem("agrisulbad-theme") === "dark") {
+                document.documentElement.classList.add("dark-mode");
+            }
+        } catch (e) {}
+    </script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -47,11 +55,33 @@
                     <li>Provide current weather information for selected locations.</li>
                     <li>Display forecast information, including estimated rain probability.</li>
                 </ul>
+            </div>
+        </section>
 
+        <section class="section developers-section">
+            <div class="section-heading">
+                <h2>Meet the Developers</h2>
+                <p>The team behind AgriSulbad.</p>
+            </div>
 
+            <div class="developer-grid">
+                <div class="developer-card">
+                    <div class="developer-avatar" aria-hidden="true">VH</div>
+                    <h3>Vartrhymon John Hinagdanan</h3>
+                    <span>Developer</span>
+                </div>
+
+                <div class="developer-card">
+                    <div class="developer-avatar" aria-hidden="true">CF</div>
+                    <h3>Clint Stohj Fuentes</h3>
+                    <span>Developer</span>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <footer>
-        <p>© 2026 AgriSulbad | Land Farm Locator & Weather Monitoring</p>
+        <p>© 2026 AgriSulbad | Land Farm Locator &amp; Weather Monitoring</p>
     </footer>
 
     <script src="js/main.js"></script>

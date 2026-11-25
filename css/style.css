@@ -1,4 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+/* ==========================================================================
+   AgriSulbad stylesheet
+   1.  Tokens (light + dark)       8.  Weather page
+   2.  Base                        9.  Weather card details
+   3.  Header                      10. Leaflet (maps, light + dark)
+   4.  Buttons                     11. Locator extras (search, farms)
+   5.  Hero + sections             12. About page + developers
+   6.  Cards + banner + footer     13. Accessibility
+   7.  Forms + notices             14. Responsive
+   ========================================================================== */
+
+/* ==========================================================================
+   1. TOKENS
+   ========================================================================== */
 
 :root {
     --green: #1c7c45;
@@ -11,6 +24,14 @@
     --border: #e1e9e2;
     --accent-text: #1c7c45;
 
+    /* Buttons */
+    --btn-bg: #1c7c45;
+    --btn-bg-hover: #145c34;
+    --btn-text: #ffffff;
+    --danger: #c93c3c;
+    --danger-hover: #a82f2f;
+    --danger-text: #ffffff;
+
     --soft-green: #e8f3eb;
     --soft-green-text: #145c34;
     --banner-bg: #eaf5ed;
@@ -18,6 +39,7 @@
     --notice-text: #315b3e;
     --shadow: rgba(0, 0, 0, 0.05);
 
+    /* Tinted panels */
     --tint-green: #f0fdf4;
     --tint-green-border: #bbf7d0;
     --tint-blue: #eff6ff;
@@ -25,16 +47,28 @@
     --tint-orange: #fff7ed;
     --tint-orange-text: #7c2d12;
 
+    /* Heat / temperature */
     --heat-cool: #2563eb;
     --heat-normal: #16a34a;
     --heat-hot: #d97706;
     --heat-very-hot: #dc2626;
     --heat-extreme: #7f1d1d;
 
+    /* Weather icons */
+    --ic-cloud: #64748b;
+    --ic-rain: #2563eb;
+    --ic-thunder: #7c3aed;
+    --ic-fog: #94a3b8;
+    --ic-search: #2563eb;
+
+    --radius-sm: 7px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+
     color-scheme: light;
 }
 
-/* DARK THEME (class is set on <html> early and on <body> by main.js) */
+/* Dark theme. The class is set on <html> early (no flash) and on <body> by main.js */
 html.dark-mode,
 body.dark-mode {
     --green: #34b36b;
@@ -46,6 +80,13 @@ body.dark-mode {
     --card: #1a261e;
     --border: #2b3a30;
     --accent-text: #4ade80;
+
+    --btn-bg: #34b36b;
+    --btn-bg-hover: #4ade80;
+    --btn-text: #06210f;
+    --danger: #f87171;
+    --danger-hover: #fca5a5;
+    --danger-text: #2b0b0b;
 
     --soft-green: #223329;
     --soft-green-text: #b7ebc9;
@@ -67,8 +108,18 @@ body.dark-mode {
     --heat-very-hot: #f87171;
     --heat-extreme: #fca5a5;
 
+    --ic-cloud: #94a3b8;
+    --ic-rain: #60a5fa;
+    --ic-thunder: #a78bfa;
+    --ic-fog: #a8b5c4;
+    --ic-search: #60a5fa;
+
     color-scheme: dark;
 }
+
+/* ==========================================================================
+   2. BASE
+   ========================================================================== */
 
 * {
     margin: 0;
@@ -78,14 +129,27 @@ body.dark-mode {
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: 80px;
     background: var(--background);
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     font-family: 'Poppins', sans-serif;
     background: var(--background);
     color: var(--text);
+}
+
+/* Added by main.js after first paint, so the theme never fades in on page load */
+html.theme-ready body {
     transition: background 0.3s, color 0.3s;
+}
+
+main {
+    flex: 1;
 }
 
 a {
@@ -102,7 +166,9 @@ button {
     cursor: pointer;
 }
 
-/* HEADER */
+/* ==========================================================================
+   3. HEADER
+   ========================================================================== */
 
 .header {
     width: 100%;
@@ -143,7 +209,9 @@ button {
     color: var(--accent-text);
 }
 
-/* BUTTONS */
+/* ==========================================================================
+   4. BUTTONS
+   ========================================================================== */
 
 button,
 .primary-btn,
@@ -151,7 +219,7 @@ button,
 .danger-btn {
     border: none;
     padding: 11px 17px;
-    border-radius: 7px;
+    border-radius: var(--radius-sm);
     font-size: 12px;
     font-weight: 600;
     transition: 0.2s;
@@ -160,39 +228,49 @@ button,
 
 button,
 .primary-btn {
-    background: var(--green);
-    color: white;
+    background: var(--btn-bg);
+    color: var(--btn-text);
 }
 
 button:hover,
 .primary-btn:hover {
-    background: var(--dark-green);
+    background: var(--btn-bg-hover);
 }
 
-.secondary-btn {
-    background: var(--soft-green);
-    color: var(--soft-green-text);
-}
-
-.danger-btn {
-    background: #d94b4b;
-    color: white;
-}
-
+.secondary-btn,
 .theme-toggle {
     background: var(--soft-green);
     color: var(--soft-green-text);
+}
+
+.theme-toggle {
     white-space: nowrap;
 }
 
-/* Must come after button:hover so it wins */
+/* These must come after "button:hover" so they win */
 .secondary-btn:hover,
 .theme-toggle:hover {
     background: var(--border);
     color: var(--soft-green-text);
 }
 
-/* HERO */
+.danger-btn {
+    background: var(--danger);
+    color: var(--danger-text);
+}
+
+.danger-btn:hover {
+    background: var(--danger-hover);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   5. HERO + SECTIONS
+   ========================================================================== */
 
 .hero {
     min-height: 500px;
@@ -201,9 +279,7 @@ button:hover,
     align-items: center;
     background:
         linear-gradient(90deg, rgba(8, 50, 25, 0.90), rgba(15, 100, 48, 0.62)),
-        url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=80");
-    background-position: center;
-    background-size: cover;
+        url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=60") center / cover no-repeat #0b3d20;
     color: white;
 }
 
@@ -220,6 +296,7 @@ button:hover,
     margin-bottom: 12px;
 }
 
+/* On photo backgrounds the label is always light */
 .hero .hero-label,
 .about-hero .hero-label {
     color: #c8f2d4;
@@ -243,8 +320,6 @@ button:hover,
     gap: 12px;
     flex-wrap: wrap;
 }
-
-/* GENERAL SECTIONS */
 
 .section {
     padding: 65px 7%;
@@ -273,7 +348,9 @@ button:hover,
     line-height: 1.7;
 }
 
-/* FEATURE CARDS */
+/* ==========================================================================
+   6. CARDS + BANNER + FOOTER
+   ========================================================================== */
 
 .feature-grid {
     display: grid;
@@ -284,7 +361,7 @@ button:hover,
 .feature-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     padding: 25px;
     transition: 0.25s;
 }
@@ -316,14 +393,12 @@ button:hover,
     font-weight: 700;
 }
 
-/* HOME BANNER */
-
 .home-banner {
     margin: 0 7% 65px;
     padding: 30px;
     background: var(--banner-bg);
     color: var(--banner-text);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -336,8 +411,6 @@ button:hover,
     line-height: 1.7;
 }
 
-/* FOOTER */
-
 footer {
     padding: 22px 7%;
     text-align: center;
@@ -347,7 +420,9 @@ footer {
     border-top: 1px solid var(--border);
 }
 
-/* SEARCH */
+/* ==========================================================================
+   7. FORMS + NOTICES
+   ========================================================================== */
 
 .search-container,
 .weather-search {
@@ -362,24 +437,28 @@ footer {
     min-width: 0;
     padding: 12px 14px;
     border: 1px solid var(--border);
-    border-radius: 7px;
+    border-radius: var(--radius-sm);
     outline: none;
     font-size: 13px;
     background: var(--card);
     color: var(--text);
 }
 
+.search-container input::placeholder,
+.weather-search input::placeholder {
+    color: var(--muted);
+}
+
 .search-container input:focus,
 .weather-search input:focus {
     border-color: var(--green);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 25%, transparent);
 }
 
 .search-container button,
 .weather-search button {
     white-space: nowrap;
 }
-
-/* NOTICE */
 
 .notice {
     padding: 14px;
@@ -392,120 +471,14 @@ footer {
     line-height: 1.7;
 }
 
-/* LAND FARM LOCATOR */
-
-#map {
-    width: 100%;
-    height: 500px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    z-index: 1;
-}
-
-.land-information {
-    margin-top: 25px;
-}
-
-.land-information h2,
-.selected-location h2 {
-    margin-bottom: 15px;
-    font-size: 20px;
-}
-
-.info-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-}
-
-.info-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 20px;
-}
-
-.info-card span {
-    color: var(--muted);
-    font-size: 12px;
-}
-
-.info-card h3 {
-    margin-top: 8px;
-    color: var(--accent-text);
-    font-size: 21px;
-}
-
-.button-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 18px;
-}
-
-.selected-location {
-    background: var(--section);
-    padding: 17px;
-    border-radius: 10px;
-    margin-top: 15px;
-}
-
-.selected-location h3 {
-    font-size: 14px;
-    margin-bottom: 7px;
-}
-
-.selected-location p {
-    color: var(--muted);
-    font-size: 11px;
-    margin-bottom: 5px;
-    overflow-wrap: anywhere;
-}
-
-/* LEAFLET DARK MODE */
-
-html.dark-mode .leaflet-tile-pane,
-body.dark-mode .leaflet-tile-pane {
-    filter: brightness(0.75) contrast(1.1) saturate(0.8);
-}
-
-html.dark-mode .leaflet-popup-content-wrapper,
-html.dark-mode .leaflet-popup-tip,
-body.dark-mode .leaflet-popup-content-wrapper,
-body.dark-mode .leaflet-popup-tip {
-    background: var(--card);
-    color: var(--text);
-}
-
-/* Draw toolbar (polygon / edit / delete): the icons are dark images, so the
-   buttons keep a light background and are inverted to look dark with light icons.
-   Only background-COLOR is set here; the shorthand "background" would erase the icons. */
-html.dark-mode .leaflet-draw-toolbar a,
-body.dark-mode .leaflet-draw-toolbar a {
-    background-color: #f4f4f4;
-    filter: invert(0.9);
-}
-
-html.dark-mode .leaflet-draw-actions a,
-body.dark-mode .leaflet-draw-actions a {
-    background-color: var(--card);
-    color: var(--text);
-}
-
-html.dark-mode .leaflet-control-zoom a,
-body.dark-mode .leaflet-control-zoom a {
-    background-color: var(--card);
-    color: var(--text);
-    border-color: var(--border);
-}
-
-/* WEATHER SEARCH */
+/* ==========================================================================
+   8. WEATHER PAGE
+   ========================================================================== */
 
 .weather-search {
     max-width: 750px;
     margin: 0 auto 22px;
 }
-
-/* WEATHER TWO-COLUMN LAYOUT */
 
 .weather-layout {
     display: grid;
@@ -520,7 +493,7 @@ body.dark-mode .leaflet-control-zoom a {
     min-width: 0;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     padding: 15px;
     box-shadow: 0 4px 16px var(--shadow);
 }
@@ -540,17 +513,15 @@ body.dark-mode .leaflet-control-zoom a {
     line-height: 1.6;
 }
 
-/* WEATHER MAP */
-
 #weatherMap {
     width: 100%;
     height: 520px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     border: 1px solid var(--border);
     z-index: 1;
 }
 
-/* ===== ICONS ===== */
+/* Icons */
 
 .icon {
     width: 1em;
@@ -567,12 +538,12 @@ body.dark-mode .leaflet-control-zoom a {
 .rain-prediction h3 .icon { width: 16px; height: 16px; }
 
 .ic-sun      { color: #f59e0b; }
-.ic-cloud    { color: #64748b; }
+.ic-cloud    { color: var(--ic-cloud); }
 .ic-partly   { color: #f59e0b; }
-.ic-rain     { color: #2563eb; }
-.ic-thunder  { color: #7c3aed; }
+.ic-rain     { color: var(--ic-rain); }
+.ic-thunder  { color: var(--ic-thunder); }
 .ic-snow     { color: #38bdf8; }
-.ic-fog      { color: #94a3b8; }
+.ic-fog      { color: var(--ic-fog); }
 .ic-temp     { color: #ef4444; }
 .ic-humidity { color: #0ea5e9; }
 .ic-wind     { color: #14b8a6; }
@@ -580,16 +551,14 @@ body.dark-mode .leaflet-control-zoom a {
 .ic-flame    { color: #f97316; }
 .ic-alert    { color: #dc2626; }
 .ic-key      { color: #ca8a04; }
-.ic-search   { color: #2563eb; }
+.ic-search   { color: var(--ic-search); }
 .ic-pin      { color: #dc2626; }
-
-/* WEATHER PLACEHOLDER */
 
 .weather-placeholder {
     text-align: center;
     padding: 30px 12px;
     background: var(--section);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     border: 1px dashed var(--border);
     color: var(--muted);
 }
@@ -610,7 +579,9 @@ body.dark-mode .leaflet-control-zoom a {
     line-height: 1.6;
 }
 
-/* WEATHER CARD */
+/* ==========================================================================
+   9. WEATHER CARD DETAILS
+   ========================================================================== */
 
 #weatherResult {
     width: 100%;
@@ -622,7 +593,7 @@ body.dark-mode .leaflet-control-zoom a {
     background: var(--section);
     border: 1px solid var(--border);
     padding: 14px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     text-align: center;
 }
 
@@ -659,7 +630,7 @@ body.dark-mode .leaflet-control-zoom a {
     margin: 4px 0 10px;
 }
 
-/* ===== TEMPERATURE + HEAT COLORS (theme-aware) ===== */
+/* Temperature + heat colors (theme-aware) */
 
 .temperature.temp-cool,     .forecast-item b.temp-cool,
 .heat-cool,                 .forecast-item small.heat-cool     { color: var(--heat-cool); }
@@ -671,8 +642,6 @@ body.dark-mode .leaflet-control-zoom a {
 .heat-very-hot,             .forecast-item small.heat-very-hot { color: var(--heat-very-hot); }
 .temperature.temp-extreme,  .forecast-item b.temp-extreme,
 .heat-extreme,              .forecast-item small.heat-extreme  { color: var(--heat-extreme); }
-
-/* HEAT BADGE (pill) */
 
 .heat-badge {
     display: inline-flex;
@@ -693,12 +662,12 @@ body.dark-mode .leaflet-control-zoom a {
 
 .heat-badge .icon { color: inherit; }
 
-/* TODAY'S FORECAST */
+/* Today's forecast */
 
 .today-summary {
     margin: 14px 0;
     padding: 12px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     background: var(--tint-green);
     border: 1px solid var(--tint-green-border);
     text-align: left;
@@ -729,8 +698,7 @@ body.dark-mode .leaflet-control-zoom a {
     font-size: 12px;
 }
 
-
-/* DETAIL CARDS */
+/* Detail cards */
 
 .weather-details {
     display: grid;
@@ -742,7 +710,7 @@ body.dark-mode .leaflet-control-zoom a {
 .weather-detail {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     padding: 10px;
     text-align: center;
 }
@@ -772,12 +740,12 @@ body.dark-mode .leaflet-control-zoom a {
     font-weight: 600;
 }
 
-/* RAIN + HEAT ADVISORY PANELS */
+/* Rain + heat advisory panels */
 
 .rain-prediction {
     margin: 12px 0;
     padding: 12px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     text-align: left;
     background: var(--tint-blue);
     border: 1px solid var(--border);
@@ -802,7 +770,7 @@ body.dark-mode .leaflet-control-zoom a {
     line-height: 1.7;
 }
 
-/* FORECAST LIST */
+/* Forecast strip */
 
 .forecast-container {
     margin-top: 14px;
@@ -836,15 +804,11 @@ body.dark-mode .leaflet-control-zoom a {
     padding: 9px 6px;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     text-align: center;
 }
 
-.forecast-item span {
-    font-size: 10px;
-    color: var(--muted);
-}
-
+.forecast-item span,
 .forecast-item small {
     font-size: 10px;
     color: var(--muted);
@@ -854,7 +818,22 @@ body.dark-mode .leaflet-control-zoom a {
     font-size: 13px;
 }
 
-/* MAP MARKER LABEL */
+/* ==========================================================================
+   10. LEAFLET (maps)
+   ========================================================================== */
+
+#map {
+    width: 100%;
+    height: 500px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    z-index: 1;
+}
+
+.leaflet-container {
+    font-family: 'Poppins', sans-serif;
+    background: var(--section);
+}
 
 .location-marker-label {
     background: var(--card);
@@ -869,26 +848,120 @@ body.dark-mode .leaflet-control-zoom a {
     border-top-color: var(--card);
 }
 
-/* RESPONSIVE */
+/* Dark mode: ".dark-mode" matches whether the class is on <html> or <body> */
 
-@media (max-width: 900px) {
-    .weather-layout,
-    .feature-grid,
-    .info-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .header {
-        flex-wrap: wrap;
-    }
-
-    .home-banner {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+.dark-mode .leaflet-tile-pane {
+    filter: brightness(0.75) contrast(1.1) saturate(0.8);
 }
 
-/* SEARCH RESULTS DROPDOWN (created by locator.js) */
+.dark-mode .leaflet-popup-content-wrapper,
+.dark-mode .leaflet-popup-tip {
+    background: var(--card);
+    color: var(--text);
+}
+
+.dark-mode .leaflet-container a.leaflet-popup-close-button {
+    color: var(--muted);
+}
+
+.dark-mode .leaflet-control-attribution {
+    background: rgba(15, 23, 18, 0.8);
+    color: var(--muted);
+}
+
+.dark-mode .leaflet-control-attribution a {
+    color: var(--accent-text);
+}
+
+/* Zoom buttons */
+.dark-mode .leaflet-control-zoom a {
+    background-color: var(--card);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+.dark-mode .leaflet-control-zoom a:hover {
+    background-color: var(--section);
+}
+
+/* Draw toolbar (polygon / edit / delete): the icons are dark images, so the
+   buttons keep a light background and are inverted to look dark with light icons.
+   Only background-COLOR is set here; the "background" shorthand would erase the icons. */
+.dark-mode .leaflet-draw-toolbar a {
+    background-color: #f4f4f4;
+    filter: invert(0.9);
+}
+
+.dark-mode .leaflet-draw-actions a {
+    background-color: var(--card);
+    color: var(--text);
+}
+
+/* ==========================================================================
+   11. LOCATOR EXTRAS
+   ========================================================================== */
+
+.land-information {
+    margin-top: 25px;
+}
+
+.land-information h2,
+.selected-location h2 {
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.info-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+}
+
+.info-card span {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.info-card h3 {
+    margin-top: 8px;
+    color: var(--accent-text);
+    font-size: 21px;
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.selected-location {
+    background: var(--section);
+    padding: 17px;
+    border-radius: var(--radius-md);
+    margin-top: 15px;
+}
+
+.selected-location h3 {
+    font-size: 14px;
+    margin-bottom: 7px;
+}
+
+.selected-location p {
+    color: var(--muted);
+    font-size: 11px;
+    margin-bottom: 5px;
+    overflow-wrap: anywhere;
+}
+
+/* Search results dropdown (created by locator.js) */
 
 .search-results {
     list-style: none;
@@ -936,26 +1009,60 @@ body.dark-mode .leaflet-control-zoom a {
     overflow-wrap: anywhere;
 }
 
-/* FARM MARKERS */
+/* Map pins (created in locator.js). The color comes from --pin. */
 
-.farm-marker {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    font-size: 18px;
-    line-height: 1;
-    background: var(--card);
-    border: 2px solid var(--green);
-    border-radius: 50%;
-    box-shadow: 0 2px 8px var(--shadow);
+.map-pin {
+    --pin: var(--green);                 /* saved farm */
 }
 
-.farm-marker.saved {
-    background: var(--green);
-    border-color: var(--card);
+.map-pin.draft {
+    --pin: #f59e0b;                      /* farm not saved yet */
 }
+
+.map-pin.location {
+    --pin: #e11d48;                      /* selected location */
+}
+
+.map-pin svg {
+    display: block;
+    overflow: visible;
+    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35));
+    transform-origin: 50% 100%;
+    transition: transform 0.15s;
+    animation: pin-drop 0.35s ease-out;
+}
+
+.map-pin:hover svg {
+    transform: translateY(-3px) scale(1.06);
+}
+
+.pin-body {
+    fill: var(--pin);
+    stroke: #fff;
+    stroke-width: 1.6;
+}
+
+.pin-inner {
+    fill: #fff;
+}
+
+.pin-glyph {
+    fill: var(--pin);
+}
+
+.pin-stem {
+    fill: none;
+    stroke: var(--pin);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+}
+
+@keyframes pin-drop {
+    from { transform: translateY(-14px); opacity: 0; }
+    to   { transform: none; opacity: 1; }
+}
+
+/* Farm popups */
 
 .leaflet-popup-content .farm-popup {
     min-width: 170px;
@@ -980,8 +1087,9 @@ body.dark-mode .leaflet-control-zoom a {
     gap: 6px;
 }
 
+/* ".leaflet-container a" would otherwise force the link color */
 .farm-popup-actions a.primary-btn {
-    color: #fff;
+    color: var(--btn-text);
 }
 
 .farm-popup-actions .primary-btn,
@@ -991,7 +1099,7 @@ body.dark-mode .leaflet-control-zoom a {
     font-size: 11px;
 }
 
-/* MY FARMS LIST */
+/* My Farms list */
 
 .saved-farms {
     margin-top: 25px;
@@ -1021,7 +1129,7 @@ body.dark-mode .leaflet-control-zoom a {
     gap: 12px;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     padding: 12px 14px;
 }
 
@@ -1039,4 +1147,207 @@ body.dark-mode .leaflet-control-zoom a {
     display: flex;
     gap: 8px;
     flex-shrink: 0;
+}
+
+/* ==========================================================================
+   12. ABOUT PAGE + DEVELOPERS
+   ========================================================================== */
+
+.about-hero {
+    padding: 70px 7%;
+    text-align: center;
+    color: white;
+    background:
+        linear-gradient(90deg, rgba(8, 50, 25, 0.92), rgba(15, 100, 48, 0.72)),
+        url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=60") center / cover no-repeat #0b3d20;
+}
+
+.about-hero h1 {
+    font-size: clamp(30px, 5vw, 46px);
+    line-height: 1.2;
+    margin-bottom: 12px;
+}
+
+.about-hero p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #e6f3e9;
+}
+
+.about-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.about-content h2 {
+    font-size: 22px;
+    margin: 28px 0 10px;
+}
+
+.about-content h2:first-child {
+    margin-top: 0;
+}
+
+.about-content p,
+.about-content li {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+.about-content ul {
+    padding-left: 20px;
+}
+
+.developers-section {
+    background: var(--section);
+}
+
+.developer-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.developer-card {
+    flex: 0 1 280px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px 22px;
+    text-align: center;
+    transition: 0.25s;
+}
+
+.developer-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--green);
+}
+
+.developer-avatar {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.developer-card h3 {
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.developer-card span {
+    color: var(--accent-text);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   13. ACCESSIBILITY
+   ========================================================================== */
+
+:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .feature-card:hover,
+    .developer-card:hover {
+        transform: none;
+    }
+}
+
+/* ==========================================================================
+   14. RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 900px) {
+    .weather-layout {
+        grid-template-columns: 1fr;
+    }
+
+    #weatherMap {
+        height: 400px;
+    }
+}
+
+@media (max-width: 700px) {
+    .feature-grid,
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Header: logo + theme button on top, navigation underneath */
+    .header {
+        flex-wrap: wrap;
+        padding: 12px 5%;
+        gap: 10px;
+    }
+
+    .navigation {
+        order: 3;
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px 18px;
+    }
+
+    .hero {
+        min-height: 420px;
+        padding: 56px 5%;
+    }
+
+    .section {
+        padding: 45px 5%;
+    }
+
+    .about-hero {
+        padding: 50px 5%;
+    }
+
+    .home-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        margin: 0 5% 45px;
+    }
+
+    .search-container,
+    .weather-search {
+        flex-wrap: wrap;
+    }
+
+    .search-container input,
+    .weather-search input {
+        flex: 1 1 100%;
+    }
+
+    #map {
+        height: 400px;
+    }
+
+    #weatherMap {
+        height: 340px;
+    }
+
+    .saved-farms li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }

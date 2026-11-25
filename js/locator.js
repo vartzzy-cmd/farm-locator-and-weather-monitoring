@@ -115,6 +115,8 @@ let drawingActive = false;
 let drawingTimer = null;
 let locationRequest = 0;
 let lastNominatimCall = 0;
+let landMarker = null;
+let currentFarmName = "";
 
 // While drawing/editing/deleting, map clicks must not drop the weather marker.
 // The flag is released slightly late because the last click of a drawing
@@ -182,7 +184,8 @@ function updateLandInformation(layer) {
     setText("landStatus", "Selected");
 
     selectedLand = layer;
-    landCenter = layer.getBounds().getCenter();
+    landCenter = polygonCenter(latlngs) || layer.getBounds().getCenter();
+    refreshLandMarker();
 }
 
 function resetLandInformation() {
@@ -192,6 +195,8 @@ function resetLandInformation() {
 
     selectedLand = null;
     landCenter = null;
+    currentFarmName = "";
+    removeLandMarker();
 }
 
 map.on(L.Draw.Event.CREATED, function (event) {
@@ -205,7 +210,9 @@ map.on(L.Draw.Event.CREATED, function (event) {
 
     drawnItems.clearLayers(); // one farm boundary at a time
     drawnItems.addLayer(layer);
+    currentFarmName = "";
     updateLandInformation(layer);
+    notify("Boundary drawn. Tap the 🌾 marker to save this farm.");
 });
 
 map.on(L.Draw.Event.EDITED, function (event) {
@@ -238,6 +245,8 @@ function setWeatherMarker(lat, lon) {
 
     if (!weatherMarker) {
         weatherMarker = L.marker([lat, lon], {
+            icon: pinIcon("location"),
+            title: "Selected location",
             draggable: true,
             autoPan: true
         }).addTo(map);
@@ -409,10 +418,11 @@ function selectResult(result) {
         drawnItems.clearLayers();
         drawnItems.addLayer(outline);
         updateLandInformation(outline);
+        currentFarmName = result.name || "";
 
         map.fitBounds(outline.getBounds(), { maxZoom: 18 });
         setWeatherMarker(landCenter.lat, landCenter.lng);
-        notify("Farm boundary loaded from OpenStreetMap. You can edit it with the draw tools.");
+        notify("Farm boundary loaded from OpenStreetMap. Tap the 🌾 marker to save it, or use the draw tools to edit it.");
     } else {
         map.setView([lat, lon], 16);
         setWeatherMarker(lat, lon);
@@ -595,3 +605,330 @@ $("clearLandBtn").addEventListener("click", function () {
     drawnItems.clearLayers();
     resetLandInformation();
 });
+
+// ===== FARM MARKERS & SAVED FARMS =====
+const FARMS_KEY = "agrisulbad-farms";
+const MAX_FARMS = 50;
+
+const savedLayer = new L.FeatureGroup().addTo(map);
+const farmMarkers = new Map();
+let savedFarms = [];
+let savedPanel = null;
+
+// Pin-shaped map markers (inline SVG, colors come from CSS so dark mode works)
+//   "location" = selected spot (red)   "draft" = farm not saved yet (amber)   "saved" = saved farm (green)
+const PIN_GLYPHS = {
+    farm: '<path class="pin-glyph" d="M16 15C16 12.2 17.8 10.8 20 10.8 20 13.4 18.4 15 16 15Z"/>' +
+          '<path class="pin-glyph" d="M16 17C16 14.8 14.6 13.6 12.4 13.6 12.4 15.8 13.8 17 16 17Z"/>' +
+          '<path class="pin-stem" d="M16 19.4V14.2"/>',
+    location: '<circle class="pin-glyph" cx="16" cy="15.5" r="3"/>'
+};
+
+function pinIcon(kind) {
+    const glyph = kind === "location" ? PIN_GLYPHS.location : PIN_GLYPHS.farm;
+
+    const html =
+        '<svg viewBox="0 0 32 42" width="32" height="42" aria-hidden="true">' +
+        '<path class="pin-body" d="M16 1C7.7 1 1 7.6 1 15.8 1 27 16 41 16 41s15-14 15-25.2C31 7.6 24.3 1 16 1z"/>' +
+        '<circle class="pin-inner" cx="16" cy="15.5" r="7.5"/>' +
+        glyph +
+        '</svg>';
+
+    return L.divIcon({
+        className: "map-pin " + kind,
+        html,
+        iconSize: [32, 42],
+        iconAnchor: [16, 41],
+        popupAnchor: [0, -36]
+    });
+}
+
+// Area-weighted centre of a polygon (stays closer to the land than the bounding box)
+function polygonCenter(latlngs) {
+    let a = 0, cx = 0, cy = 0;
+
+    for (let i = 0; i < latlngs.length; i++) {
+        const p = latlngs[i];
+        const q = latlngs[(i + 1) % latlngs.length];
+        const f = p.lng * q.lat - q.lng * p.lat;
+
+        a += f;
+        cx += (p.lng + q.lng) * f;
+        cy += (p.lat + q.lat) * f;
+    }
+
+    if (Math.abs(a) < 1e-12) return null;
+
+    a /= 2;
+    return L.latLng(cy / (6 * a), cx / (6 * a));
+}
+
+function formatArea(areaM2) {
+    return `${(areaM2 / 10000).toFixed(4)} ha · ${Math.round(areaM2).toLocaleString("en-US")} m²`;
+}
+
+// Popup content built with DOM nodes, so farm names can never inject HTML
+function makeFarmPopup(title, areaM2, lat, lon, actions) {
+    const box = document.createElement("div");
+    box.className = "farm-popup";
+
+    const heading = document.createElement("strong");
+    heading.textContent = title;
+
+    const info = document.createElement("p");
+    info.textContent = formatArea(areaM2);
+
+    const row = document.createElement("div");
+    row.className = "farm-popup-actions";
+
+    const weather = document.createElement("a");
+    weather.className = "primary-btn";
+    weather.textContent = "Weather";
+    weather.href = `weather.html?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
+    row.appendChild(weather);
+
+    actions.forEach(({ label, className, onClick }) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = className;
+        button.textContent = label;
+        button.addEventListener("click", onClick);
+        row.appendChild(button);
+    });
+
+    box.append(heading, info, row);
+    return box;
+}
+
+// --- marker on the farm being drawn / loaded ---
+function refreshLandMarker() {
+    if (!landCenter) return;
+
+    if (!landMarker) {
+        landMarker = L.marker(landCenter, {
+            icon: pinIcon("draft"),
+            zIndexOffset: 300,
+            title: "Your farm"
+        }).addTo(map);
+
+        landMarker.bindPopup(buildLandPopup);
+    } else {
+        landMarker.setLatLng(landCenter);
+    }
+}
+
+function removeLandMarker() {
+    if (landMarker) {
+        map.removeLayer(landMarker);
+        landMarker = null;
+    }
+}
+
+function buildLandPopup() {
+    const area = selectedLand ? calculateArea(selectedLand.getLatLngs()[0]) : 0;
+
+    return makeFarmPopup(
+        currentFarmName || "Your farm",
+        area,
+        landCenter.lat,
+        landCenter.lng,
+        [{ label: "Save Farm", className: "secondary-btn", onClick: saveCurrentFarm }]
+    );
+}
+
+// --- saved farms (kept in this browser's localStorage) ---
+function isValidFarm(farm) {
+    return Boolean(farm) &&
+        typeof farm.id === "string" &&
+        typeof farm.name === "string" &&
+        Array.isArray(farm.latlngs) &&
+        farm.latlngs.length >= 3 &&
+        farm.latlngs.every(p => Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1]) && isInMindanao(p[0], p[1])) &&
+        Number.isFinite(farm.areaM2) &&
+        Number.isFinite(farm.lat) &&
+        Number.isFinite(farm.lon);
+}
+
+function readFarms() {
+    try {
+        const raw = JSON.parse(localStorage.getItem(FARMS_KEY) || "[]");
+        return Array.isArray(raw) ? raw.filter(isValidFarm) : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function writeFarms() {
+    try {
+        localStorage.setItem(FARMS_KEY, JSON.stringify(savedFarms));
+        return true;
+    } catch (error) {
+        notify("Couldn't save in this browser. Check that storage is allowed for this site.");
+        return false;
+    }
+}
+
+function saveCurrentFarm() {
+    if (!selectedLand || !landCenter) {
+        notify("Please draw your farm boundary first.");
+        return;
+    }
+
+    if (savedFarms.length >= MAX_FARMS) {
+        notify(`You can save up to ${MAX_FARMS} farms. Delete one first.`);
+        return;
+    }
+
+    const name = (prompt("Name this farm:", currentFarmName) || "").trim().slice(0, 60);
+    if (!name) return;
+
+    const ring = selectedLand.getLatLngs()[0];
+
+    const farm = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        name,
+        latlngs: ring.map(p => [p.lat, p.lng]),
+        areaM2: calculateArea(ring),
+        lat: landCenter.lat,
+        lon: landCenter.lng
+    };
+
+    savedFarms.push(farm);
+
+    if (!writeFarms()) {
+        savedFarms.pop();
+        return;
+    }
+
+    drawnItems.clearLayers();
+    resetLandInformation();
+
+    renderSavedFarms();
+    focusFarm(farm.id);
+    notify(`"${name}" saved. Its 🌾 marker stays on the map.`);
+}
+
+function deleteFarm(id) {
+    const farm = savedFarms.find(f => f.id === id);
+    if (!farm || !confirm(`Remove "${farm.name}" from your saved farms?`)) return;
+
+    savedFarms = savedFarms.filter(f => f.id !== id);
+    writeFarms();
+    map.closePopup();
+    renderSavedFarms();
+}
+
+function focusFarm(id) {
+    const farm = savedFarms.find(f => f.id === id);
+    if (!farm) return;
+
+    map.fitBounds(L.latLngBounds(farm.latlngs), { maxZoom: 18 });
+
+    const marker = farmMarkers.get(id);
+    if (marker) marker.openPopup();
+}
+
+function renderSavedFarms() {
+    savedLayer.clearLayers();
+    farmMarkers.clear();
+
+    savedFarms.forEach(farm => {
+        // Outline is decorative only, so it never blocks drawing or clicks
+        L.polygon(farm.latlngs, { ...FARM_STYLE, weight: 2, interactive: false }).addTo(savedLayer);
+
+        const marker = L.marker([farm.lat, farm.lon], {
+            icon: pinIcon("saved"),
+            zIndexOffset: 300,
+            title: farm.name
+        }).addTo(savedLayer);
+
+        marker.bindPopup(() => makeFarmPopup(
+            farm.name,
+            farm.areaM2,
+            farm.lat,
+            farm.lon,
+            [{ label: "Remove", className: "danger-btn", onClick: () => deleteFarm(farm.id) }]
+        ));
+
+        farmMarkers.set(farm.id, marker);
+    });
+
+    renderPanel();
+}
+
+// --- "My Farms" list under the map (created here, no HTML change needed) ---
+function buildPanel() {
+    savedPanel = document.createElement("section");
+    savedPanel.className = "saved-farms";
+
+    const anchor = document.querySelector(".land-information") || $("map");
+    anchor.insertAdjacentElement("afterend", savedPanel);
+}
+
+function renderPanel() {
+    savedPanel.innerHTML = "";
+
+    const heading = document.createElement("h2");
+    heading.textContent = `My Farms (${savedFarms.length})`;
+    savedPanel.appendChild(heading);
+
+    if (!savedFarms.length) {
+        const empty = document.createElement("p");
+        empty.className = "empty";
+        empty.textContent = "No saved farms yet. Draw or search a farm, tap its 🌾 marker, then choose Save Farm.";
+        savedPanel.appendChild(empty);
+        return;
+    }
+
+    const list = document.createElement("ul");
+
+    savedFarms.forEach(farm => {
+        const item = document.createElement("li");
+
+        const text = document.createElement("div");
+        const name = document.createElement("strong");
+        name.textContent = "🌾 " + farm.name;
+        const area = document.createElement("small");
+        area.textContent = formatArea(farm.areaM2);
+        text.append(name, area);
+
+        const actions = document.createElement("div");
+        actions.className = "farm-actions";
+
+        const locate = document.createElement("button");
+        locate.type = "button";
+        locate.className = "secondary-btn";
+        locate.textContent = "Locate";
+        locate.addEventListener("click", () => focusFarm(farm.id));
+
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "danger-btn";
+        remove.textContent = "Delete";
+        remove.addEventListener("click", () => deleteFarm(farm.id));
+
+        actions.append(locate, remove);
+        item.append(text, actions);
+        list.appendChild(item);
+    });
+
+    savedPanel.appendChild(list);
+}
+
+// "Save Farm" button next to the existing farm buttons
+const buttonRow = document.querySelector(".button-row");
+
+if (buttonRow) {
+    const saveBtn = document.createElement("button");
+    saveBtn.type = "button";
+    saveBtn.id = "saveFarmBtn";
+    saveBtn.className = "secondary-btn";
+    saveBtn.textContent = "💾 Save Farm";
+    saveBtn.addEventListener("click", saveCurrentFarm);
+    buttonRow.appendChild(saveBtn);
+}
+
+// ===== INIT SAVED FARMS =====
+savedFarms = readFarms();
+buildPanel();
+renderSavedFarms();

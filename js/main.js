@@ -1,26 +1,38 @@
-
 const themeToggle = document.getElementById("themeToggle");
 
 function applyTheme(theme) {
-    document.body.classList.toggle("dark-mode", theme === "dark");
+    const isDark = theme === "dark";
+
+    // Keep <html> and <body> in sync (the <head> script sets the <html> one early)
+    document.documentElement.classList.toggle("dark-mode", isDark);
+    document.body.classList.toggle("dark-mode", isDark);
 
     if (themeToggle) {
-        themeToggle.textContent = theme === "dark"
-            ? "☀️ Light Mode"
-            : "🌙 Dark Mode";
+        themeToggle.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
     }
 
-    localStorage.setItem("agrisulbad-theme", theme);
+    try {
+        localStorage.setItem("agrisulbad-theme", theme);
+    } catch (e) {}
 }
 
-applyTheme(localStorage.getItem("agrisulbad-theme") || "light");
+let savedTheme = "light";
+try {
+    savedTheme = localStorage.getItem("agrisulbad-theme") || "light";
+} catch (e) {}
+
+applyTheme(savedTheme);
 
 if (themeToggle) {
     themeToggle.addEventListener("click", function () {
-        const newTheme = document.body.classList.contains("dark-mode")
-            ? "light"
-            : "dark";
-
-        applyTheme(newTheme);
+        applyTheme(document.body.classList.contains("dark-mode") ? "light" : "dark");
     });
 }
+
+// Turn on the color transition only after the first paint,
+// so the saved theme never fades in when a page loads.
+requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+        document.documentElement.classList.add("theme-ready");
+    });
+});
